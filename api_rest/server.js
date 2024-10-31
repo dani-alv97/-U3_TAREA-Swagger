@@ -1,6 +1,8 @@
 const express = require('express')
 const body_parser = require('body-parser')
+const swaggerUI = require('swagger-ui-express')
 
+const specs = require('./swagger/swagger')
 const config = require('./config')
 const db = require('./db')
 const routes = require('./network/routes')
@@ -14,11 +16,13 @@ db(config.DB_URL)
 app.use(cors({
     origin: 'http://localhost:9191', // Permitir solo este origen
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
+
     allowedHeaders: ['Content-Type', 'Authorization'], // Encabezados permitidos
 }));
 
 app.use( body_parser.json() )
 app.use( body_parser.urlencoded({extended:false}) )
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(specs))
 app.use('/', express.static('public'))
 
 routes(app)
